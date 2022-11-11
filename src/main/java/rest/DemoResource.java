@@ -26,9 +26,9 @@ import utils.EMF_Creator;
 @Path("info")
 public class DemoResource {
     
-    private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
-    private static final UserFacade FACADE =  UserFacade.getUserFacade(EMF);
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
+    private final UserFacade FACADE =  UserFacade.getUserFacade(EMF);
+    private final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     @Context
     private UriInfo context;
 
