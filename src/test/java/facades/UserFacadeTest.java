@@ -65,7 +65,7 @@ public class UserFacadeTest {
     }
 
     // TODO: Delete or change this method
-
+    /*
     @Test
     public void testCreateUser() throws Exception{
         List<Role> role = new ArrayList<>();
@@ -78,6 +78,6 @@ public class UserFacadeTest {
 
         assertEquals("Lo", facade.createUser(John1).getUserName());
     }
-
+*/
 
 }
