@@ -1,14 +1,15 @@
 package facades;
 
-import dtos.UserDTO;
-import entities.Butik;
-import entities.Role;
-import entities.User;
+import dtos.*;
+import entities.*;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import errorhandling.InvalidInputException;
+import errorhandling.NotFoundException;
 import security.errorhandling.AuthenticationException;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class UserFacade {
     private static EntityManagerFactory emf;
     private static UserFacade instance;
     private static ButikFacade butikFacade;
+    private static ProduktFacade produktFacade;
 
     private UserFacade() {
     }
@@ -36,6 +38,7 @@ public class UserFacade {
             emf = _emf;
             instance = new UserFacade();
             butikFacade = ButikFacade.getButikFacade(emf);
+            produktFacade = ProduktFacade.getProduktFacade(emf);
         }
         return instance;
     }
@@ -73,19 +76,36 @@ public class UserFacade {
         }
     }
 
-    public UserDTO createUser(UserDTO userdto) throws AuthenticationException, InvalidInputException {
+    public List<PrisProduktDTO> getPrisByKunde(String kunde){
+        EntityManager em = emf.createEntityManager();
+        try{
+            TypedQuery query = em.createQuery("select p.id, p.beløb, pp.navn, b.navn from Pris p join Butik b on b.id = p.butik.id join User u on u.butik.id = b.id join Produkt pp on pp.id = p.produkt.id where u.userName = :kunde", Pris.class);
+            query.setParameter("kunde", kunde);
+            System.out.println(query.getResultList());
+            List<PrisProduktDTO> pe = query.getResultList();
+            return pe;
+        } finally {
+            em.close();
+        }
+    }
+
+    public UserDTO createKunde(UserDTO userdto) throws AuthenticationException, InvalidInputException {
         EntityManager em = emf.createEntityManager();
         List<Role> role = new ArrayList<>();
         Role userRole = new Role("user");
         role.add(userRole);
+
         User user =  new User(userdto.getUserName(), userdto.getUserPass(),role);
 
         try {
 
             em.getTransaction().begin();
             Butik butik = butikFacade.getOrCreateButik(userdto.getButikDTO());
+            Produkt produkt = produktFacade.getProduktByName("Fremvisning");
+            System.out.println("produkt: " + produkt.getNavn());
             em.persist(user);
             butik.addUser(user);
+            user.addProdukter(produkt);
             em.merge(user);
             em.getTransaction().commit();
         } finally {
@@ -93,5 +113,37 @@ public class UserFacade {
         }
         return new UserDTO(user);
     }
+    public User getKundeByName(String name){
+        EntityManager em = emf.createEntityManager();
+        try{
+            TypedQuery query = em.createQuery("select u from User u where u.userName = :name", User.class);
+            query.setParameter("name", name);
+            System.out.println(query.getSingleResult());
+            User user = (User) query.getSingleResult();
+            return user;
+        }
+        catch (NoResultException nre){
+            return null;
+        } finally {
+            em.close();
+        }
+    }
 
+    public UserDTO sendRequest(UserDTO userDTO, ProduktDTO produktDTO){
+        EntityManager em = emf.createEntityManager();
+        User user = getKundeByName(userDTO.getUserName());
+        Produkt produkt = produktFacade.getProduktByName(produktDTO.getNavn());
+        System.out.println("produkt " + produkt.getNavn());
+
+        try{
+            em.getTransaction().begin();
+            user.addProdukter(produkt);
+            em.merge(user);
+            System.out.println("kunde --> " + produkt.getKunder().size());
+            em.getTransaction().commit();
+            return new UserDTO(user);
+        } finally {
+            em.close();
+        }
+    }
 }

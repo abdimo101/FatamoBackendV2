@@ -13,7 +13,7 @@ public class Produkt {
     private Integer id;
     private String navn;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<User> users;
     @OneToMany(mappedBy = "produkt",cascade = CascadeType.PERSIST)
     private List<Pris> priser;

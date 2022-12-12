@@ -17,7 +17,8 @@ public class Pris {
     public Pris() {
     }
 
-    public Pris(Integer beløb, Butik butik, Produkt produkt) {
+    public Pris(Integer id,Integer beløb, Butik butik, Produkt produkt) {
+        this.id = id;
         this.beløb = beløb;
         this.butik = butik;
         this.produkt = produkt;

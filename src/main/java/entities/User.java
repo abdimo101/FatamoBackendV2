@@ -12,7 +12,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+public class User {
 
   private static final long serialVersionUID = 1L;
   @Id
@@ -31,7 +31,7 @@ public class User implements Serializable {
     @JoinColumn(name = "role_name", referencedColumnName = "role_name")})
   @ManyToMany
   private List<Role> roleList = new ArrayList<>();
-  @ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
+  @ManyToMany(mappedBy = "users", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   private List<Produkt> produkter;
   @ManyToOne(cascade = CascadeType.PERSIST)
   private Butik butik;
@@ -64,6 +64,7 @@ public class User implements Serializable {
     this.userName = userName;
     this.userPass = BCrypt.hashpw(userPass, BCrypt.gensalt());
     this.roleList = role;
+    this.produkter = new ArrayList<>();
   }
   public User(String userName){
     this.userName = userName;
@@ -113,6 +114,16 @@ public class User implements Serializable {
 
   public void addRole(Role userRole) {
     roleList.add(userRole);
+  }
+
+
+  public void addProdukter(Produkt produkt)
+  {
+    this.produkter.add(produkt);
+    if(produkter != null){
+      this.produkter.add(produkt);
+      produkt.getKunder().add(this);
+    }
   }
 
 }

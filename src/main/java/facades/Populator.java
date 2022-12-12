@@ -26,7 +26,7 @@ public class Populator {
         User user = new User("testkunde1", "123");
         Butik butik = new Butik("Home");
         butik.addUser(user);
-        uf.createUser(new UserDTO(user));
+        uf.createKunde(new UserDTO(user));
 
         /*
         fe.create(new RenameMeDTO(new RenameMe("First 1", "Last 1")));

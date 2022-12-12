@@ -1,9 +1,12 @@
 package facades;
 
+import dtos.ProduktDTO;
 import dtos.UserDTO;
 import entities.Butik;
+import entities.Produkt;
 import entities.Role;
 import entities.User;
+import errorhandling.NotFoundException;
 import org.junit.jupiter.api.*;
 import utils.EMF_Creator;
 
@@ -14,13 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 //Uncomment the line below, to temporarily disable this test
 //@Disabled
 public class UserFacadeTest {
 
     private static EntityManagerFactory emf;
-    private static UserFacade facade;
+    private static UserFacade userFacade;
+    private static ProduktFacade produktFacade;
+    private static AdministratorFacade administratorFacade;
 
     public UserFacadeTest() {
     }
@@ -28,7 +34,9 @@ public class UserFacadeTest {
     @BeforeAll
     public static void setUpClass() {
         emf = EMF_Creator.createEntityManagerFactoryForTest();
-        facade = UserFacade.getUserFacade(emf);
+        userFacade = UserFacade.getUserFacade(emf);
+        produktFacade = ProduktFacade.getProduktFacade(emf);
+        administratorFacade = AdministratorFacade.getAdministratorFacade(emf);
 
     }
 
@@ -37,27 +45,7 @@ public class UserFacadeTest {
         //Clean up database after test is done or use a persistence unit with drop-and-create to start up clean on every test
     }
 
-    // Setup the DataBase in a known state BEFORE EACH TEST
-    //TODO -- Make sure to change the code below to use YOUR OWN entity class
-  /*  @BeforeEach
-    public void setUp() {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            List<Role> role = new ArrayList<>();
-            Role testRole = new Role("user");
-            Butik butik = new Butik("Home");
-            role.add(testRole);
-            User testPerson = new User("TestPerson", "TestPassword","TestEmail@gmail.com", role);
-            butik.addUser(testPerson);
-            em.persist(testPerson);
 
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-    }
-*/
     @AfterEach
     public void tearDown() {
 
@@ -65,19 +53,34 @@ public class UserFacadeTest {
     }
 
     // TODO: Delete or change this method
-    /*
+/*
     @Test
     public void testCreateUser() throws Exception{
         List<Role> role = new ArrayList<>();
         Role userRole = new Role("user");
         Butik butik = new Butik("Home");
         role.add(userRole);
-        User John = new User("Lo", "THansen", role);
+        User John = new User("ffs", "THansen", role);
         butik.addUser(John);
         UserDTO John1 = new UserDTO(John);
 
-        assertEquals("Lo", facade.createUser(John1).getUserName());
+        assertEquals("ffs", userFacade.createKunde(John1).getUserName());
+    }
+
+    @Test
+    public void testSendForespørgsel() throws Exception{
+        User user = new User("userp2", "123");
+        UserDTO userDTO = new UserDTO(user);
+        Produkt produkt = new Produkt("Fremvisning");
+        ProduktDTO produktDTO = new ProduktDTO(produkt);
+        userFacade.sendRequest(userDTO, produktDTO);
+        assertEquals("1", userDTO.getProdukter().size());
     }
 */
 
+   @Test
+   public void testDeleteKunde() throws NotFoundException {
+       administratorFacade.deleteKunde("ffs");
+       assertNull(userFacade.getKundeByName("ffs"));
+   }
 }

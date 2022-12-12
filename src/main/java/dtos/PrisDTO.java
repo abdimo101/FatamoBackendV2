@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PrisDTO {
+    private  Integer id;
     private Integer beløb;
     private ButikDTO butikDTO;
     private ProduktDTO produktDTO;
@@ -29,6 +30,14 @@ public class PrisDTO {
         List<PrisDTO> prisdtos = new ArrayList();
         pris.forEach(pr->prisdtos.add(new PrisDTO(pr)));
         return prisdtos;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getBeløb() {

@@ -1,7 +1,9 @@
 package facades;
 
 import dtos.ProduktDTO;
+import dtos.UserDTO;
 import entities.Produkt;
+import entities.User;
 import errorhandling.NotFoundException;
 
 import javax.persistence.EntityManager;
@@ -59,6 +61,8 @@ public class ProduktFacade {
             em.close();
         }
     }
+
+
 
 
 }

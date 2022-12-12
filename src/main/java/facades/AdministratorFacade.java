@@ -1,15 +1,17 @@
 package facades;
 
-import dtos.PrisDTO;
-import dtos.PrisProduktDTO;
+import dtos.*;
 import entities.Butik;
 import entities.Pris;
 import entities.Produkt;
+import entities.User;
 import errorhandling.NotFoundException;
 
+import javax.enterprise.inject.Typed;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdministratorFacade {
@@ -42,7 +44,7 @@ public class AdministratorFacade {
         EntityManager em = emf.createEntityManager();
         Butik butik1 = butikFacade.getOrCreateButik(prisDTO.getButikDTO());
         Produkt produkt1 =produktFacade.getProdukt(prisDTO.getProduktDTO());
-        Pris pris = new Pris(prisDTO.getBeløb(), butik1, produkt1);
+        Pris pris = new Pris(prisDTO.getId(),prisDTO.getBeløb(), butik1, produkt1);
         try{
         em.getTransaction().begin();
         em.persist(pris);
@@ -57,24 +59,12 @@ public class AdministratorFacade {
         }
     }
 
-    public List<PrisDTO> getPris(String produkt, String kunde){
-        EntityManager em = emf.createEntityManager();
-        try{
-            TypedQuery query = em.createQuery("select p from Pris p join Butik b on b.id = p.butik.id join User u on u.butik.id = b.id join Produkt pp on pp.id = p.produkt.id where pp.navn = :produkt and u.userName = :kunde", Pris.class);
-            query.setParameter("produkt", produkt);
-            query.setParameter("kunde", kunde);
-            System.out.println(query.getResultList());
-            List<Pris> pe = query.getResultList();
-            return PrisDTO.getDtos(pe);
-        } finally {
-            em.close();
-        }
-    }
+
 
     public List<PrisProduktDTO> getAllPris(){
         EntityManager em = emf.createEntityManager();
         try{
-            TypedQuery query = em.createQuery("select pp.navn, p.beløb, b.navn from Pris p join Butik b on b.id = p.butik.id  join Produkt pp on pp.id = p.produkt.id", Pris.class);
+            TypedQuery query = em.createQuery("select p.id, pp.navn, p.beløb, b.navn from Pris p join Butik b on b.id = p.butik.id  join Produkt pp on pp.id = p.produkt.id", Pris.class);
             System.out.println(query.getResultList());
             List<PrisProduktDTO> pe = query.getResultList();
             return pe;
@@ -84,4 +74,50 @@ public class AdministratorFacade {
     }
 
 
+    public PrisDTO editPris(PrisDTO prisDTO) throws NotFoundException {
+        EntityManager em = emf.createEntityManager();
+        Pris pris = em.find(Pris.class, prisDTO.getId());
+        Butik butik1 = butikFacade.getOrCreateButik(prisDTO.getButikDTO());
+        Produkt produkt1 =produktFacade.getProdukt(prisDTO.getProduktDTO());
+        try{
+            if(pris == null){
+                throw new NotFoundException("Kunne ikke finde prisen med det indtastede id");
+            }
+            em.getTransaction().begin();
+            pris.setBeløb(prisDTO.getBeløb());
+            pris.setButik(butik1);
+            pris.setProdukt(produkt1);
+            em.getTransaction().commit();
+            return new PrisDTO(pris);
+        }
+        finally {
+            em.close();
+        }
+    }
+
+    public String deleteKunde(String kunde) throws NotFoundException {
+        EntityManager em = emf.createEntityManager();
+        try{
+            em.getTransaction().begin();
+            TypedQuery query = em.createQuery("delete from User u  where u.userName = :kunde", User.class);
+            query.setParameter("kunde", kunde);
+            query.executeUpdate();
+            em.getTransaction().commit();
+            String res = "kundeprofil "+kunde +" slettet";
+            return res;
+        } finally {
+            em.close();
+        }
+        }
+
+    public List<UserProduktDTO> getAllRequests(){
+        EntityManager em = emf.createEntityManager();
+        try{
+            TypedQuery query = em.createQuery("select u.userName, u.butik.navn, p.navn from User u join u.produkter p join Pris pp on pp.produkt.id = p.id", User.class);
+            List<UserProduktDTO> upp = query.getResultList();
+            return upp;
+        } finally {
+            em.close();
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package dtos;
 
+import entities.Produkt;
 import entities.RenameMe;
 import entities.Role;
 import entities.User;
@@ -13,6 +14,7 @@ public class UserDTO {
     private List<String> roleList = new ArrayList<>();
     private RoleDTO roleDTO;
     private ButikDTO butikDTO;
+    private List<Produkt> produkter;
     public UserDTO(String userName, String userPass, List<String> roleList) {
         this.userName = userName;
         this.userPass = userPass;
@@ -23,7 +25,6 @@ public class UserDTO {
         this.userName = user.getUserName();
         this.userPass = user.getUserPass();
         this.roleList = user.getRolesAsStrings();
-        this.butikDTO = new ButikDTO(user.getButik());
     }
 
     public static List<UserDTO> getDtos(List<User> user){
@@ -71,5 +72,14 @@ public class UserDTO {
 
     public void setButikDTO(ButikDTO butikDTO) {
         this.butikDTO = butikDTO;
+    }
+
+
+    public List<Produkt> getProdukter() {
+        return produkter;
+    }
+
+    public void setProdukter(List<Produkt> produkter) {
+        this.produkter = produkter;
     }
 }

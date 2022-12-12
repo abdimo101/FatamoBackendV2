@@ -3,6 +3,7 @@ package rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dtos.PrisDTO;
+import dtos.UserDTO;
 import errorhandling.NotFoundException;
 import facades.AdministratorFacade;
 import utils.EMF_Creator;
@@ -37,23 +38,37 @@ public class AdministratorResource {
     }
 
 
-
-    @Path("produkt/{produkt_navn}/{kunde_navn}")
-    @RolesAllowed("admin")
-    @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    public String getPriserByProdukt(@PathParam("produkt_navn")String produkt_navn, @PathParam("kunde_navn")String kunde_navn){
-        return GSON.toJson(FACADE.getPris(produkt_navn, kunde_navn));
-    }
-
     @Path("produkt/all")
-    @RolesAllowed("admin")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public String getAllPriser(){
         return GSON.toJson(FACADE.getAllPris());
     }
 
+    @Path("pris/edit/{id}")
+    @PUT
+    @Consumes("application/json")
+    @Produces("application/json")
+    public String editPris(@PathParam("id")int id, String pris) throws NotFoundException {
+        PrisDTO prisDTO =  GSON.fromJson(pris, PrisDTO.class);
+        prisDTO.setId(id);
+        return GSON.toJson(FACADE.editPris(prisDTO));
+    }
+
+    @Path("kunde/delete/{kunde}")
+    @DELETE
+    @Consumes("application/json")
+    @Produces("application/json")
+    public String deleteKunde(@PathParam("kunde") String kunde) throws NotFoundException {
+        return GSON.toJson(FACADE.deleteKunde(kunde));
+    }
+
+    @Path("request/all")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public String getAllRequests(){
+        return GSON.toJson(FACADE.getAllRequests());
+    }
 
 
 }
