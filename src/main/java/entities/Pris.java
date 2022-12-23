@@ -4,6 +4,7 @@ import javax.persistence.*;
 
 @Table(name = "pris")
 @Entity
+@NamedQuery(name = "pris.deleteAllRows", query = "DELETE from Pris pp")
 public class Pris {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

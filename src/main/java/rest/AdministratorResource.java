@@ -17,16 +17,8 @@ import javax.ws.rs.core.MediaType;
 public class AdministratorResource {
 
     private final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
-
     private final AdministratorFacade FACADE =  AdministratorFacade.getAdministratorFacade(EMF);
     private final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
-    @GET
-    @Produces("text/plain")
-    public String hello(){
-        return "hello world!";
-    }
-
 
     @POST
     @Consumes("application/json")

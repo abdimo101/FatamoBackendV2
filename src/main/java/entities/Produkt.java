@@ -6,6 +6,7 @@ import java.util.List;
 
 @Table(name = "produkt")
 @Entity
+@NamedQuery(name = "produkt.deleteAllRows", query = "DELETE from Produkt p")
 public class Produkt {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

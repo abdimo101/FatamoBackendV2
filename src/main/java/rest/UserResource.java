@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import errorhandling.InvalidInputException;
+import errorhandling.NotFoundException;
 import facades.UserFacade;
 import security.errorhandling.AuthenticationException;
 import utils.EMF_Creator;
@@ -95,7 +96,7 @@ public class UserResource {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public String sendRequest(String userprodukt) {
+    public String sendRequest(String userprodukt) throws NotFoundException {
         UserProduktDTO updto = GSON.fromJson(userprodukt, UserProduktDTO.class);
         System.out.println("userprodukt: " + userprodukt);
         UserDTO newupdto = FACADE.sendRequest(updto.getUserDTO(), updto.getProduktDTO());

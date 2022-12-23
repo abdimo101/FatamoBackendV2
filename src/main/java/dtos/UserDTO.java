@@ -14,7 +14,7 @@ public class UserDTO {
     private List<String> roleList = new ArrayList<>();
     private RoleDTO roleDTO;
     private ButikDTO butikDTO;
-    private List<Produkt> produkter;
+    private List<ProduktDTO> produkter;
     public UserDTO(String userName, String userPass, List<String> roleList) {
         this.userName = userName;
         this.userPass = userPass;
@@ -25,6 +25,8 @@ public class UserDTO {
         this.userName = user.getUserName();
         this.userPass = user.getUserPass();
         this.roleList = user.getRolesAsStrings();
+        this.butikDTO = new ButikDTO(user.getButik());
+        //this.produkter = ProduktDTO.getDtos(user.getProdukter());
     }
 
     public static List<UserDTO> getDtos(List<User> user){
@@ -75,11 +77,11 @@ public class UserDTO {
     }
 
 
-    public List<Produkt> getProdukter() {
+    public List<ProduktDTO> getProdukter() {
         return produkter;
     }
 
-    public void setProdukter(List<Produkt> produkter) {
+    public void setProdukter(List<ProduktDTO> produkter) {
         this.produkter = produkter;
     }
 }

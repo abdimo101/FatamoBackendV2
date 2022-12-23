@@ -134,6 +134,7 @@ public class UserFacade {
         User user = getKundeByName(userDTO.getUserName());
         Produkt produkt = produktFacade.getProduktByName(produktDTO.getNavn());
         System.out.println("produkt " + produkt.getNavn());
+        System.out.println("user " + user.getUserName());
 
         try{
             em.getTransaction().begin();

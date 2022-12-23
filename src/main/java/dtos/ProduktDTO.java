@@ -13,13 +13,14 @@ import java.util.List;
 
 public class ProduktDTO {
     private String navn;
-
+    private List<UserDTO> users;
     public ProduktDTO(String navn) {
         this.navn = navn;
     }
 
     public ProduktDTO(Produkt produkt) {
         this.navn = produkt.getNavn();
+        this.users = UserDTO.getDtos(produkt.getKunder());
     }
 
     public static List<ProduktDTO> getDtos(List<Produkt> produkt){
@@ -36,4 +37,12 @@ public class ProduktDTO {
         this.navn = navn;
     }
 
+
+    public List<UserDTO> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<UserDTO> users) {
+        this.users = users;
+    }
 }

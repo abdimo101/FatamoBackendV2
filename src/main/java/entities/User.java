@@ -12,6 +12,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 @Entity
 @Table(name = "users")
+@NamedQuery(name = "user.deleteAllRows", query = "DELETE from User u")
 public class User {
 
   private static final long serialVersionUID = 1L;
@@ -64,6 +65,7 @@ public class User {
     this.userName = userName;
     this.userPass = BCrypt.hashpw(userPass, BCrypt.gensalt());
     this.roleList = role;
+    this.butik = butik;
     this.produkter = new ArrayList<>();
   }
   public User(String userName){

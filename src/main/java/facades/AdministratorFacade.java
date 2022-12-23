@@ -44,7 +44,7 @@ public class AdministratorFacade {
         EntityManager em = emf.createEntityManager();
         Butik butik1 = butikFacade.getOrCreateButik(prisDTO.getButikDTO());
         Produkt produkt1 =produktFacade.getProdukt(prisDTO.getProduktDTO());
-        Pris pris = new Pris(prisDTO.getId(),prisDTO.getBeløb(), butik1, produkt1);
+        Pris pris = new Pris(prisDTO.getId(), prisDTO.getBeløb(), butik1, produkt1);
         try{
         em.getTransaction().begin();
         em.persist(pris);
