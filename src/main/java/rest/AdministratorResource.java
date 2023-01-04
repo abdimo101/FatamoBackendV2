@@ -30,7 +30,7 @@ public class AdministratorResource {
     }
 
 
-    @Path("produkt/all")
+    @Path("pris/all")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public String getAllPriser(){

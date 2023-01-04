@@ -112,7 +112,6 @@ public class AllFacadeTest {
     }
 
     @Test
-
     public void testGetPrisByKunde()  {
         List<PrisProduktDTO> priser = userFacade.getPrisByKunde("testkunde0");
         assertEquals(1, priser.size());
@@ -154,3 +153,4 @@ public class AllFacadeTest {
 
 
 }
+

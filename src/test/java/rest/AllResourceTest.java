@@ -1,11 +1,16 @@
 package rest;
 
-import entities.RenameMe;
+import dtos.*;
+import entities.*;
+import errorhandling.NotFoundException;
+import io.restassured.http.ContentType;
 import utils.EMF_Creator;
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
 import io.restassured.parsing.Parser;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
@@ -14,6 +19,8 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,11 +29,10 @@ import org.junit.jupiter.api.Test;
 //Uncomment the line below, to temporarily disable this test
 //@Disabled
 
-public class RenameMeResourceTest {
+public class AllResourceTest {
 
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
-    private static RenameMe r1, r2;
 
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
@@ -64,13 +70,24 @@ public class RenameMeResourceTest {
     @BeforeEach
     public void setUp() {
         EntityManager em = emf.createEntityManager();
-        r1 = new RenameMe("Some txt", "More text");
-        r2 = new RenameMe("aaa", "bbb");
         try {
             em.getTransaction().begin();
-            em.createNamedQuery("RenameMe.deleteAllRows").executeUpdate();
-            em.persist(r1);
-            em.persist(r2);
+            em.createNamedQuery("user.deleteAllRows").executeUpdate();
+            em.createNamedQuery("pris.deleteAllRows").executeUpdate();
+            em.createNamedQuery("produkt.deleteAllRows").executeUpdate();
+            em.createNamedQuery("butik.deleteAllRows").executeUpdate();
+            Produkt produkt = new Produkt("Fremvisning");
+            Butik butik = new Butik("EDC");
+            Pris pris = new Pris(1,1000, butik, produkt);
+            User user = new User("testkunde0", "123");
+            User user1 = new User("testkunde01","123");
+            butik.addUser(user);
+            butik.addUser(user1);
+            em.persist(user);
+            em.persist(user1);
+            em.persist(butik);
+            em.persist(produkt);
+            em.persist(pris);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -82,24 +99,51 @@ public class RenameMeResourceTest {
         given().when().get("/xxx").then().statusCode(200);
     }
 
-    //This test assumes the database contains two rows
     @Test
-    public void testDummyMsg() throws Exception {
-        given()
-                .contentType("application/json")
-                .get("/xxx/").then()
-                .assertThat()
-                .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("msg", equalTo("Hello World"));
+    public void testCreateKunde() {
+        List<Role> role = new ArrayList<>();
+        Role userRole = new Role("user");
+        Butik butik = new Butik("Home");
+        role.add(userRole);
+        User user = new User("testkunde", "123", role);
+        butik.addUser(user);
+        UserDTO userdto = new UserDTO(user);
+
+        given().
+                contentType("application/json").
+                body(userdto)
+                .when()
+                .request("post", "/user").then()
+                .statusCode(HttpStatus.OK_200.getStatusCode());
     }
 
     @Test
-    public void testCount() throws Exception {
-        given()
-                .contentType("application/json")
-                .get("/xxx/count").then()
-                .assertThat()
-                .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("count", equalTo(2));
+    public void testCreatePris() {
+        ProduktDTO produktDTO = new ProduktDTO("Fremvisning");
+        ButikDTO butikDTO = new ButikDTO("Home");
+        PrisDTO prisDTO = new PrisDTO(3000, butikDTO, produktDTO);
+        given().
+                contentType("application/json").
+                body(prisDTO)
+                .when()
+                .request("post", "/admin").then()
+                .statusCode(HttpStatus.OK_200.getStatusCode());
     }
+
+    @Test
+    void testEditPris() throws NotFoundException {
+
+        testCreatePris();
+        ProduktDTO produktDTO = new ProduktDTO("Fremvisning");
+        ButikDTO butikDTO = new ButikDTO("Home");
+        PrisDTO prisDTO = new PrisDTO(2500, butikDTO, produktDTO);
+        prisDTO.setId(1);
+        given().
+                contentType("application/json").
+                body(prisDTO)
+                .when()
+                .request("put", "/admin/pris/edit/"+prisDTO.getId()).then()
+                .statusCode(HttpStatus.OK_200.getStatusCode());
+    }
+
 }
