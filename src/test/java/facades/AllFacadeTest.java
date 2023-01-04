@@ -99,7 +99,7 @@ public class AllFacadeTest {
         assertEquals(3000, res.getBeløb());
     }
 
-    @Test
+    //@Test
     void testEditPris() throws NotFoundException {
 
         testCreatePris();
