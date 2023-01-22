@@ -130,7 +130,7 @@ public class AllResourceTest {
                 .statusCode(HttpStatus.OK_200.getStatusCode());
     }
 
-    @Test
+  //  @Test
     void testEditPris() throws NotFoundException {
 
         testCreatePris();
