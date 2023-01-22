@@ -101,11 +101,8 @@ public class UserFacade {
 
             em.getTransaction().begin();
             Butik butik = butikFacade.getOrCreateButik(userdto.getButikDTO());
-            Produkt produkt = produktFacade.getProduktByName("Fremvisning");
-            System.out.println("produkt: " + produkt.getNavn());
             em.persist(user);
             butik.addUser(user);
-            user.addProdukter(produkt);
             em.merge(user);
             em.getTransaction().commit();
         } finally {
